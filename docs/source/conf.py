@@ -177,5 +177,5 @@ extlinks = {
 ipython_execlines = [
     "import ipaddress",
     "import pandas as pd",
-    "from cyberpandas import IPArray, to_ipaddress",
+    "from cyberpandas import TemperatureArray, to_temperature",
 ]

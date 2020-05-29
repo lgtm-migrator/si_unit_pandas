@@ -6,11 +6,11 @@
 Cyberpandas provides support for storing IP and MAC address data inside a pandas DataFrame using pandas' [Extension Array Interface](http://pandas-docs.github.io/pandas-docs-travis/extending.html#extension-types)
 
 ```python
-In [1]: from cyberpandas import IPArray
+In [1]: from cyberpandas import TemperatureArray
 
 In [2]: import pandas as pd
 
-In [3]: df = pd.DataFrame({"address": IPArray(['192.168.1.1', '192.168.1.10'])})
+In [3]: df = pd.DataFrame({"address": TemperatureArray(['192.168.1.1', '192.168.1.10'])})
 
 In [4]: df
 Out[4]:

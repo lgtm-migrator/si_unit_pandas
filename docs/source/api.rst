@@ -3,12 +3,12 @@ API
 
 .. currentmodule:: cyberpandas
 
-Cyberpandas provides two extension types, :class:`IPArray` and :class:`MACArray`.
+Cyberpandas provides two extension types, :class:`TemperatureArray` and :class:`MACArray`.
 
 :class:`IP Array`
 -----------------
 
-.. autoclass:: IPArray
+.. autoclass:: TemperatureArray
 
 Constructors
 """"""""""""
@@ -16,8 +16,8 @@ Constructors
 The class constructor is flexible, and accepts integers, strings, or bytes.
 Dedicated alternate constructors are also available.
 
-.. automethod:: IPArray.from_pyints
-.. automethod:: IPArray.from_bytes
+.. automethod:: TemperatureArray.from_pyints
+.. automethod:: TemperatureArray.from_bytes
 
 Finally, the top-level ``ip_range`` method can be used.
 
@@ -26,42 +26,42 @@ Finally, the top-level ``ip_range`` method can be used.
 Serialization
 """""""""""""
 
-Convert the IPArray to various formats.
+Convert the TemperatureArray to various formats.
 
-.. automethod:: IPArray.to_pyipaddress
-.. automethod:: IPArray.to_pyints
-.. automethod:: IPArray.to_bytes
+.. automethod:: TemperatureArray.to_pyipaddress
+.. automethod:: TemperatureArray.to_pyints
+.. automethod:: TemperatureArray.to_bytes
 
 
 Methods
 """""""
 
 Various methods that are useful for pandas. When a Series contains
-an IPArray, calling the Series method will dispatch to these methods.
+an TemperatureArray, calling the Series method will dispatch to these methods.
 
-.. automethod:: IPArray.take
-.. automethod:: IPArray.unique
-.. automethod:: IPArray.isin
-.. automethod:: IPArray.isna
+.. automethod:: TemperatureArray.take
+.. automethod:: TemperatureArray.unique
+.. automethod:: TemperatureArray.isin
+.. automethod:: TemperatureArray.isna
 
 IP Address Attributes
 """""""""""""""""""""
 
 IP addresss-specific attributes.
 
-.. autoattribute:: IPArray.is_ipv4
-.. autoattribute:: IPArray.is_ipv6
-.. autoattribute:: IPArray.version
-.. autoattribute:: IPArray.is_multicast
-.. autoattribute:: IPArray.is_private
-.. autoattribute:: IPArray.is_global
-.. autoattribute:: IPArray.is_unspecified
-.. autoattribute:: IPArray.is_reserved
-.. autoattribute:: IPArray.is_loopback
-.. autoattribute:: IPArray.is_link_local
-.. automethod:: IPArray.netmask
-.. automethod:: IPArray.hostmask
-.. automethod:: IPArray.mask
+.. autoattribute:: TemperatureArray.is_ipv4
+.. autoattribute:: TemperatureArray.is_ipv6
+.. autoattribute:: TemperatureArray.version
+.. autoattribute:: TemperatureArray.is_multicast
+.. autoattribute:: TemperatureArray.is_private
+.. autoattribute:: TemperatureArray.is_global
+.. autoattribute:: TemperatureArray.is_unspecified
+.. autoattribute:: TemperatureArray.is_reserved
+.. autoattribute:: TemperatureArray.is_loopback
+.. autoattribute:: TemperatureArray.is_link_local
+.. automethod:: TemperatureArray.netmask
+.. automethod:: TemperatureArray.hostmask
+.. automethod:: TemperatureArray.mask
 
 
 

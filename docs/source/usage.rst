@@ -12,25 +12,25 @@ We'll assume that the following imports have been performed.
 
    import ipaddress
    import pandas as pd
-   from cyberpandas import IPArray, to_ipaddress
+   from cyberpandas import TemperatureArray, to_temperature
 
 Parsing
 -------
 
 First, you'll need some IP Address data. Much like pandas'
-:func:`pandas.to_datetime`, ``cyberpandas`` provides :func:`to_ipaddress` for
-converting sequences of anything to a specialized array, :class:`IPArray` in
+:func:`pandas.to_datetime`, ``cyberpandas`` provides :func:`to_temperature` for
+converting sequences of anything to a specialized array, :class:`TemperatureArray` in
 this case.
 
 From Strings
 """"""""""""
 
-:func:`to_ipaddress` can parse a sequence strings where each element represents
+:func:`to_temperature` can parse a sequence strings where each element represents
 an IP address.
 
 .. ipython:: python
 
-   to_ipaddress([
+   to_temperature([
        '192.168.1.1',
        '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
    ])
@@ -39,7 +39,7 @@ You can also parse a *container* of bytes (Python 2 parlance).
 
 .. ipython:: python
 
-   to_ipaddress([
+   to_temperature([
        b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc0\xa8\x01\x01',
        b' \x01\r\xb8\x85\xa3\x00\x00\x00\x00\x8a.\x03ps4',
    ])
@@ -49,17 +49,17 @@ If you have a buffer / bytestring, see :ref:`from_bytes`.
 From Integers
 """""""""""""
 
-IP Addresses are just integers, and :func:`to_ipaddress` can parse a sequence of
+IP Addresses are just integers, and :func:`to_temperature` can parse a sequence of
 them.
 
 .. ipython:: python
 
-   to_ipaddress([
+   to_temperature([
       3232235777,
       42540766452641154071740215577757643572
    ])
 
-There's also the :meth:`IPArray.from_pyints` method that does the same thing.
+There's also the :meth:`TemperatureArray.from_pyints` method that does the same thing.
 
 .. _from_bytes:
 
@@ -67,28 +67,28 @@ From Bytes
 """"""""""
 
 If you have a correctly structured buffer of bytes or bytestring, you can
-directly construct an ``IPArray`` without any intermediate copies.
+directly construct an ``TemperatureArray`` without any intermediate copies.
 
 .. ipython:: python
 
    stream = (b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xc0\xa8\x01'
              b'\x01 \x01\r\xb8\x85\xa3\x00\x00\x00\x00\x8a.\x03ps4')
-   IPArray.from_bytes(stream)
+   TemperatureArray.from_bytes(stream)
 
 ``stream`` is expected to be a sequence of bytes representing IP Addresses (note
 that it's just a bytestring that's be split across two lines for readability).
 Each IP Address should be 128 bits, left padded with 0s for IPv4 addresses.
-In particular, :meth:`IPArray.to_bytes` produces such a sequence of bytes.
+In particular, :meth:`TemperatureArray.to_bytes` produces such a sequence of bytes.
 
 Pandas Integration
 ------------------
 
-``IPArray`` satisfies pandas extension array interface, which means that it can
+``TemperatureArray`` satisfies pandas extension array interface, which means that it can
 safely be stored inside pandas' Series and DataFrame.
 
 .. ipython:: python
 
-   values = to_ipaddress([
+   values = to_temperature([
        0,
        3232235777,
        42540766452641154071740215577757643572
