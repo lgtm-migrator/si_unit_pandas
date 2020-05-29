@@ -1,12 +1,68 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+#  temperature_array.py
+#
+#  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+#  Based on cyberpandas
+#  https://github.com/ContinuumIO/cyberpandas
+#  Copyright (c) 2018, Anaconda, Inc.
+#  Licensed under the BSD 3-Clause License:
+#  |
+#  |  Redistribution and use in source and binary forms, with or without
+#  |  modification, are permitted provided that the following conditions are met:
+#  |
+#  |  * Redistributions of source code must retain the above copyright notice, this
+#  |    list of conditions and the following disclaimer.
+#  |
+#  |  * Redistributions in binary form must reproduce the above copyright notice,
+#  |    this list of conditions and the following disclaimer in the documentation
+#  |    and/or other materials provided with the distribution.
+#  |
+#  |  * Neither the name of the copyright holder nor the names of its
+#  |    contributors may be used to endorse or promote products derived from
+#  |    this software without specific prior written permission.
+#  |
+#  |  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#  |  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  |  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#  |  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+#  |  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#  |  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#  |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#  |  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+#  |  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+#  |  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+# stdlib
 import abc
 import collections
 import ipaddress
 
-import numpy as np
-import pandas as pd
+# 3rd party
+import numpy
+import pandas
 import six
 from pandas.api.extensions import ExtensionDtype
 
+# this package
 from .base import Celsius, Fahrenheit, NumPyBackedExtensionArrayMixin
 
 
@@ -25,13 +81,13 @@ TemperatureBase.register(Celsius)
 TemperatureBase.register(Fahrenheit)
 
 
-@pd.api.extensions.register_extension_dtype
+@pandas.api.extensions.register_extension_dtype
 class CelsiusType(ExtensionDtype):
 	name = 'celsius'
 	type = TemperatureBase
 	kind = 'O'
-	_record_type = np.float
-	na_value = np.nan
+	_record_type = numpy.float
+	na_value = numpy.nan
 
 	@classmethod
 	def construct_from_string(cls, string):
@@ -122,12 +178,12 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		# 1. axis
 		# 2. I don't know how to do the reshaping correctly.
 
-		indices = np.asarray(indices, dtype='int')
+		indices = numpy.asarray(indices, dtype='int')
 
 		if allow_fill and fill_value is None:
 			fill_value = self.na_value
 		elif allow_fill and not isinstance(fill_value, tuple):
-			if not np.isnan(fill_value):
+			if not numpy.isnan(fill_value):
 				fill_value = int(fill_value)
 
 		if allow_fill:
@@ -138,7 +194,7 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 					raise IndexError(msg)
 				else:
 					# all NA take from and empty array
-					took = (np.full(
+					took = (numpy.full(
 							(len(indices), 2),
 							fill_value, dtype='>u8',
 							).reshape(-1).astype(self.dtype._record_type))
@@ -177,7 +233,7 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		from .parser import to_temperature
 
 		value = to_temperature(value).data
-		self.data = np.append(self.data, value)
+		self.data = numpy.append(self.data, value)
 
 	def __setitem__(self, key, value):
 		from .parser import to_temperature
@@ -302,7 +358,7 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		# Flatten all the addresses
 		temperatures = TemperatureArray(temperatures)  # TODO: think about copy=False
 
-		mask = np.zeros(len(self), dtype='bool')
+		mask = numpy.zeros(len(self), dtype='bool')
 		for network in temperatures:
 			mask |= self == network
 
