@@ -1,3 +1,4 @@
+domdf_python_tools
 numpy
 pandas>=1.0.1
 six

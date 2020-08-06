@@ -58,11 +58,11 @@ import operator
 import numpy  # type: ignore
 import numpy.testing as npt  # type: ignore
 import pandas  # type: ignore
-import pandas.util.testing as tm  # type: ignore
 import pytest
 import six
 from hypothesis import example, given
 from hypothesis.strategies import integers, lists, tuples
+from pandas._testing import assert_numpy_array_equal
 
 # this package
 import si_unit_pandas
@@ -102,7 +102,7 @@ def test_array():
 			Celsius(2),
 			Celsius(3),
 			])
-	tm.assert_numpy_array_equal(result, expected)
+	assert_numpy_array_equal(result, expected)
 
 
 def test_tolist():
@@ -120,13 +120,10 @@ def test_equality():
 	v2 = si_unit_pandas.to_temperature([20, 40])
 	result = v1 == v2
 	expected = numpy.array([False, True])
-	tm.assert_numpy_array_equal(result, expected)
+	assert_numpy_array_equal(result, expected)
 
 	result = bool(v1.equals(v2))
 	assert result is False
-
-	with pytest.raises(TypeError):
-		v1.equals("a")
 
 
 @pytest.mark.parametrize('op', [
@@ -165,7 +162,7 @@ def test_ops(tup):
 
 	r1 = v1 <= v2
 	r2 = v2 >= v1
-	tm.assert_numpy_array_equal(r1, r2)
+	assert_numpy_array_equal(r1, r2)
 
 
 def test_iter_works():
@@ -226,7 +223,7 @@ def test_unique():
 
 	result = result.astype(object)
 	expected = pandas.unique(arr.astype(object))
-	tm.assert_numpy_array_equal(result, expected)
+	assert_numpy_array_equal(result, expected)
 
 
 def test_factorize():
@@ -237,8 +234,8 @@ def test_factorize():
 	assert isinstance(uniques, si_unit_pandas.TemperatureArray)
 
 	uniques = uniques.astype(object)
-	tm.assert_numpy_array_equal(labels, expected_labels)
-	tm.assert_numpy_array_equal(uniques, expected_uniques)
+	assert_numpy_array_equal(labels, expected_labels)
+	assert_numpy_array_equal(uniques, expected_uniques)
 
 
 @pytest.mark.parametrize('values', [[0, 1, 2]])

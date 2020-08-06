@@ -50,15 +50,17 @@
 #  |  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  |  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+#  _isstringslice based on awkward-array
+#  https://github.com/scikit-hep/awkward-array
+#  Copyright (c) 2018-2019, Jim Pivarski
+#  Licensed under the BSD 3-Clause License
 
 # stdlib
 import abc
 import collections
-import ipaddress
-
-# 3rd party
 from typing import Sequence, Type, Union
 
+# 3rd party
 import numpy  # type: ignore
 import pandas  # type: ignore
 import six
@@ -68,7 +70,6 @@ from pandas.api.extensions import ExtensionDtype  # type: ignore
 from .base import Celsius, Fahrenheit, NumPyBackedExtensionArrayMixin
 
 _to_temp_types = Union[float, str, Sequence[Union[float, str]]]
-
 
 # -----------------------------------------------------------------------------
 # Extension Type
@@ -91,7 +92,6 @@ class CelsiusType(ExtensionDtype):
 	type: Type = TemperatureBase
 	kind: str = 'O'
 	_record_type: Type = numpy.float
-	na_value = numpy.nan
 
 	@classmethod
 	def construct_from_string(cls, string):
@@ -104,21 +104,45 @@ class CelsiusType(ExtensionDtype):
 	def construct_array_type(cls) -> Type["TemperatureArray"]:
 		return TemperatureArray
 
+	@property
+	def _is_numeric(self) -> bool:
+		"""
+		Whether columns with this dtype should be considered numeric.
+
+		By default ExtensionDtypes are assumed to be non-numeric.
+		They'll be excluded from operations that exclude non-numeric
+		columns, like (groupby) reductions, plotting, etc.
+		"""
+		return True
+
+	@property
+	def _is_boolean(self) -> bool:
+		"""
+		Whether this dtype should be considered boolean.
+
+		By default, ExtensionDtypes are assumed to be non-numeric.
+		Setting this to True will affect the behavior of several places,
+		e.g.
+
+		* is_bool
+		* boolean indexing
+		"""
+		return True
+
 
 # -----------------------------------------------------------------------------
 # Extension Container
 # -----------------------------------------------------------------------------
+NDArrayOperatorsMixin = numpy.lib.mixins.NDArrayOperatorsMixin
 
 
-class TemperatureArray(NumPyBackedExtensionArrayMixin):
+class TemperatureArray(NDArrayOperatorsMixin, NumPyBackedExtensionArrayMixin):
 	"""
 	Holder for Temperatures.
 
 	TemperatureArray is a container for Temperatures. It satisfies pandas'
 	extension array interface, and so can be stored inside
 	:class:`pandas.Series` and :class:`pandas.DataFrame`.
-
-	See :ref:`usage` for more.
 	"""
 
 	__array_priority__: int = 1000
@@ -127,18 +151,18 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 	ndim: int = 1
 	can_hold_na: bool = True
 
-	def __init__(self, values, dtype=None, copy: bool = False):
+	def __init__(self, data, dtype=None, copy: bool = False):
 		# this package
 		from .parser import _to_temperature_array
 
-		values = _to_temperature_array(values)  # TODO: avoid potential copy
+		# The dtype is always CelsiusType
 
-		# TODO: dtype?
+		data = _to_temperature_array(data)  # TODO: avoid potential copy
 
 		if copy:
-			values = values.copy()
+			data = data.copy()
 
-		self.data = values
+		self.data = data
 
 	@classmethod
 	def _from_ndarray(cls, data: numpy.ndarray, copy: bool = False) -> "TemperatureArray":
@@ -262,11 +286,14 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		value = to_temperature(value).data
 		self.data[key] = value
 
-	#
-	# def __iter__(self):
-	# 	from .parser import to_temperature
-	#
-	# 	return iter(to_temperature(self))
+	def __delitem__(self, where):
+		if isinstance(where, str):
+			del self.data[where]
+		elif _isstringslice(where):
+			for x in where:
+				del self.data[x]
+		else:
+			raise TypeError(f"invalid index for removing column from Table: {where}")
 
 	def astype(self, dtype, copy=True):
 		if isinstance(dtype, CelsiusType):
@@ -279,78 +306,15 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 	# Ops
 	# ------------------------------------------------------------------------
 
-	def __eq__(self, other):
-		if not isinstance(other, TemperatureArray):
-			return NotImplemented
-
-		mask = self.isna() | other.isna()
-		result = self.data == other.data
-		result[mask] = False
-		return result
-
-	def __lt__(self, other):
-		if not isinstance(other, TemperatureArray):
-			return NotImplemented
-
-		mask = self.isna() | other.isna()
-		result = (self.data <= other.data)
-		result[mask] = False
-		return result
-
-	def __le__(self, other):
-		if not isinstance(other, TemperatureArray):
-			return NotImplemented
-
-		mask = self.isna() | other.isna()
-		result = (self.data <= other.data)
-		result[mask] = False
-		return result
-
-	def __gt__(self, other):
-		if not isinstance(other, TemperatureArray):
-			return NotImplemented
-
-		return other < self
-
-	def __ge__(self, other):
-		if not isinstance(other, TemperatureArray):
-			return NotImplemented
-
-		return other <= self
-
-	def equals(self, other):
-		"""
-
-		:param other:
-		:type other:
-
-		:return:
-		:rtype:
-		"""
-
-		if not isinstance(other, TemperatureArray):
-			raise TypeError(f"Cannot compare 'TemperatureArray' to type '{type(other)}'")
-
-		# TODO: missing
-
-		return (self.data == other.data).all()
-
-	def _values_for_factorize(self):
-		return self.astype(object), ipaddress.IPv4Address(0)
-
 	def isna(self):
 		"""
 		Indicator for whether each element is missing.
-
-		A temperature of 0.0 ℃ is used to indicate missing values.
-
-		**Examples**
-
-		>>> TemperatureArray([0, 14]).isna()
-		array([ True, False])
 		"""
 
-		return self.data == self.na_value
+		if numpy.isnan(self.na_value):
+			return numpy.isnan(self.data)
+		else:
+			return self.data == self.na_value
 
 	def isin(self, other) -> numpy.ndarray:
 		"""
@@ -364,10 +328,7 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		:return: A 1-D boolean ndarray with the same length as self.
 		"""
 
-		if (
-				isinstance(other, (str, float))
-				or not isinstance(other, (TemperatureArray, collections.Sequence))
-			):
+		if (isinstance(other, (str, float)) or not isinstance(other, (TemperatureArray, collections.Sequence))):
 			other = [other]
 
 		temperatures = []
@@ -398,3 +359,28 @@ def is_temperature_type(obj):
 
 	except Exception:
 		return False
+
+
+# From https://github.com/scikit-hep/awkward-array/blob/2bbdb68d7a4fff2eeaed81eb76195e59232e8c13/awkward/array/base.py#L611
+def _isstringslice(where):
+	if isinstance(where, str):
+		return True
+	elif isinstance(where, bytes):
+		raise TypeError("column selection must be str, not bytes, in Python 3")
+	elif isinstance(where, tuple):
+		return False
+	elif isinstance(where,
+					(numpy.ndarray, TemperatureArray)) and issubclass(where.dtype.type, (numpy.str, numpy.str_)):
+		return True
+	elif isinstance(where, (numpy.ndarray, TemperatureArray)) and issubclass(
+			where.dtype.type, (numpy.object, numpy.object_)
+			) and not issubclass(where.dtype.type, (numpy.bool, numpy.bool_)):
+		return len(where) > 0 and all(isinstance(x, str) for x in where)
+	elif isinstance(where, (numpy.ndarray, TemperatureArray)):
+		return False
+	try:
+		assert len(where) > 0 and all(isinstance(x, str) for x in where)
+	except (TypeError, AssertionError):
+		return False
+	else:
+		return True

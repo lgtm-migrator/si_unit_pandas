@@ -54,7 +54,7 @@
 # 3rd party
 import numpy  # type: ignore
 import pandas  # type: ignore
-import pandas.util.testing as tm  # type: ignore
+import pandas.testing as tm  # type: ignore
 import pytest
 from hypothesis import given
 from hypothesis.strategies import integers, lists
