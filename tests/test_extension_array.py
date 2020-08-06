@@ -38,7 +38,7 @@ _non_empty_arrays = [
 		]
 
 
-def test_temperature_array():
+def test_temperature_array_members():
 	# https://pandas.pydata.org/docs/reference/api/pandas.api.extensions.ExtensionArray.html
 	assert hasattr(TemperatureArray, "_from_sequence")
 	assert hasattr(TemperatureArray, "_from_factorized")

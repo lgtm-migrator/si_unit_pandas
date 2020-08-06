@@ -51,15 +51,16 @@
 #  |  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# 3rd party
-from typing import Any, Sequence, Union
+# stdlib
+from typing import Sequence, Union
 
+# 3rd party
 import numpy as np  # type: ignore
 from pandas.api.types import is_list_like  # type: ignore
 
 # this package
 from .base import Celsius, Fahrenheit
-from .temperature_array import TemperatureArray, CelsiusType
+from .temperature_array import CelsiusType, TemperatureArray
 
 _to_temp_types = Union[float, str, Sequence[Union[float, str]]]
 
@@ -79,7 +80,9 @@ def to_temperature(values: _to_temp_types) -> TemperatureArray:
 		return TemperatureArray(_to_temperature_array([values]))
 
 
-def _to_temperature_array(values: Union[TemperatureArray, np.ndarray, Sequence[Union[str, float]]]) -> np.ndarray:  # : Union[TemperatureArray, np.ndarray]
+def _to_temperature_array(
+		values: Union[TemperatureArray, np.ndarray, Sequence[Union[str, float]]]
+		) -> np.ndarray:  # : Union[TemperatureArray, np.ndarray]
 	"""
 
 	:param values:
@@ -90,11 +93,7 @@ def _to_temperature_array(values: Union[TemperatureArray, np.ndarray, Sequence[U
 	if isinstance(values, TemperatureArray):
 		return values.data
 
-	if (
-			isinstance(values, np.ndarray)
-			and values.ndim == 1
-			and np.issubdtype(values.dtype, np.integer)
-		):
+	if (isinstance(values, np.ndarray) and values.ndim == 1 and np.issubdtype(values.dtype, np.integer)):
 		values = values.astype(float)
 		values = np.asarray(values, dtype=CelsiusType._record_type)
 

@@ -62,7 +62,7 @@ import pytest
 import six
 from hypothesis import example, given
 from hypothesis.strategies import integers, lists, tuples
-from pandas._testing import assert_numpy_array_equal
+from pandas._testing import assert_numpy_array_equal  # type: ignore
 
 # this package
 import si_unit_pandas

@@ -133,10 +133,9 @@ class CelsiusType(ExtensionDtype):
 # -----------------------------------------------------------------------------
 # Extension Container
 # -----------------------------------------------------------------------------
-NDArrayOperatorsMixin = numpy.lib.mixins.NDArrayOperatorsMixin
 
 
-class TemperatureArray(NDArrayOperatorsMixin, NumPyBackedExtensionArrayMixin):
+class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtensionArrayMixin):
 	"""
 	Holder for Temperatures.
 
