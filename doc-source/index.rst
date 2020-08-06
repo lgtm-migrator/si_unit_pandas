@@ -8,6 +8,8 @@ si_unit_pandas
 
 .. end short_desc
 
+``si_unit_pandas`` provides support for storing temperatures inside a pandas DataFrame using pandas' `Extension Array Interface <https://pandas.pydata.org/docs/reference/api/pandas.api.extensions.ExtensionArray.html#pandas.api.extensions.ExtensionArray>`_
+
 .. start shields
 
 .. list-table::
@@ -128,13 +130,8 @@ This is a data type (like ``numpy.dtype('int64')`` or
 with ``CelsiusType`` directly. It will be the value of the ``.dtype`` attribute on
 your arrays.
 
-``TemperatureArray``
----------------------
-
-This is the container for your IPAddress data.
-
-Usage
------
+Example
+------------
 
 .. code-block:: python
 
@@ -142,17 +139,6 @@ Usage
 	import pandas as pd
 
 	TemperatureArray([10, 20, 30, 40, 50])
-
-``TemperatureArray`` is a container for temperatures.
-It can in turn be stored in pandas' containers:
-
-.. code-block:: python
-
-	pd.Series(arr)
-	pd.DataFrame({"addresses": arr})
-
-See :ref:`usage` for more.
-
 
 
 .. toctree::
@@ -166,8 +152,8 @@ See :ref:`usage` for more.
 
 	usage
 	API Reference<docs>
+	contributing
 	Source
-	Building
 
 .. start links
 

@@ -8,7 +8,7 @@ si_unit_pandas
 
 .. end short_desc
 
-``si_unit_pandas`` provides support for storing temperatures inside a pandas DataFrame using pandas' `Extension Array Interface <http://pandas-docs.github.io/pandas-docs-travis/extending.html#extension-types`_
+``si_unit_pandas`` provides support for storing temperatures inside a pandas DataFrame using pandas' `Extension Array Interface <https://pandas.pydata.org/docs/reference/api/pandas.api.extensions.ExtensionArray.html#pandas.api.extensions.ExtensionArray>`_
 
 .. start shields
 
