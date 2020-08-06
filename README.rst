@@ -10,46 +10,60 @@ si_unit_pandas
 
 ``si_unit_pandas`` provides support for storing temperatures inside a pandas DataFrame using pandas' `Extension Array Interface <http://pandas-docs.github.io/pandas-docs-travis/extending.html#extension-types`_
 
-.. start shields 
+.. start shields
 
 .. list-table::
 	:stub-columns: 1
 	:widths: 10 90
 
 	* - Docs
-	  - |docs|
+	  - |docs| |docs_check|
 	* - Tests
-	  - |travis| |requires| |coveralls| |codefactor|
+	  - |travis| |actions_windows| |actions_macos| |coveralls| |codefactor|
 	* - PyPI
 	  - |pypi-version| |supported-versions| |supported-implementations| |wheel|
+	* - Activity
+	  - |commits-latest| |commits-since| |maintained|
 	* - Other
-	  - |license| |language| |commits-since| |commits-latest| |maintained| 
+	  - |license| |language| |requires| |pre_commit|
 
-.. |docs| image:: https://readthedocs.org/projects/si_unit_pandas/badge/?version=latest
+.. |docs| image:: https://img.shields.io/readthedocs/si_unit_pandas/latest?logo=read-the-docs
 	:target: https://si_unit_pandas.readthedocs.io/en/latest/?badge=latest
 	:alt: Documentation Status
+
+.. |docs_check| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Docs%20Check/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Docs+Check%22
+	:alt: Docs Check Status
 
 .. |travis| image:: https://img.shields.io/travis/com/domdfcoding/si_unit_pandas/master?logo=travis
 	:target: https://travis-ci.com/domdfcoding/si_unit_pandas
 	:alt: Travis Build Status
 
+.. |actions_windows| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Windows%20Tests/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Windows+Tests%22
+	:alt: Windows Tests Status
+
+.. |actions_macos| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/macOS%20Tests/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22macOS+Tests%22
+	:alt: macOS Tests Status
+
 .. |requires| image:: https://requires.io/github/domdfcoding/si_unit_pandas/requirements.svg?branch=master
 	:target: https://requires.io/github/domdfcoding/si_unit_pandas/requirements/?branch=master
 	:alt: Requirements Status
 
-.. |coveralls| image:: https://coveralls.io/repos/github/domdfcoding/si_unit_pandas/badge.svg?branch=master
+.. |coveralls| image:: https://img.shields.io/coveralls/github/domdfcoding/si_unit_pandas/master?logo=coveralls
 	:target: https://coveralls.io/github/domdfcoding/si_unit_pandas?branch=master
 	:alt: Coverage
 
-.. |codefactor| image:: https://img.shields.io/codefactor/grade/github/domdfcoding/si_unit_pandas
+.. |codefactor| image:: https://img.shields.io/codefactor/grade/github/domdfcoding/si_unit_pandas?logo=codefactor
 	:target: https://www.codefactor.io/repository/github/domdfcoding/si_unit_pandas
 	:alt: CodeFactor Grade
 
-.. |pypi-version| image:: https://img.shields.io/pypi/v/si_unit_pandas.svg
+.. |pypi-version| image:: https://img.shields.io/pypi/v/si_unit_pandas
 	:target: https://pypi.org/project/si_unit_pandas/
 	:alt: PyPI - Package Version
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/si_unit_pandas.svg
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/si_unit_pandas?logo=python&logoColor=white
 	:target: https://pypi.org/project/si_unit_pandas/
 	:alt: PyPI - Supported Python Versions
 
@@ -62,8 +76,8 @@ si_unit_pandas
 	:alt: PyPI - Wheel
 
 .. |license| image:: https://img.shields.io/github/license/domdfcoding/si_unit_pandas
-	:alt: License
 	:target: https://github.com/domdfcoding/si_unit_pandas/blob/master/LICENSE
+	:alt: License
 
 .. |language| image:: https://img.shields.io/github/languages/top/domdfcoding/si_unit_pandas
 	:alt: GitHub top language
@@ -78,6 +92,10 @@ si_unit_pandas
 
 .. |maintained| image:: https://img.shields.io/maintenance/yes/2020
 	:alt: Maintenance
+
+.. |pre_commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+	:target: https://github.com/pre-commit/pre-commit
+	:alt: pre-commit
 
 .. end shields
 

@@ -1,33 +1,35 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-# This file is managed by `git_helper`. Don't edit it directly
+# This file is managed by 'repo_helper'. Don't edit it directly.
 
+# stdlib
 import os
 import re
 import sys
 
+# 3rd party
+from sphinx.locale import _
+
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 
-from sphinx.locale import _
-
 from __pkginfo__ import __version__
 
+# User-configurable lines
+# End of user-configurable lines
 
-github_url = f"https://github.com/domdfcoding/si_unit_pandas"
+github_url = "https://github.com/domdfcoding/si_unit_pandas"
 
 rst_prolog = f""".. |pkgname| replace:: si_unit_pandas
 .. |pkgname2| replace:: ``si_unit_pandas``
 .. |browse_github| replace:: `Browse the GitHub Repository <{github_url}>`__
-.. |ghurl| replace:: {github_url}
 """
 
 author = "Dominic Davis-Foster"
 project = "si_unit_pandas"
 slug = re.sub(r'\W+', '-', project.lower())
 release = version = __version__
-copyright = "2020 Dominic Davis-Foster"
+copyright = "2020 Dominic Davis-Foster"  # pylint: disable=redefined-builtin
 language = 'en'
 package_root = "si_unit_pandas"
 
@@ -43,10 +45,18 @@ extensions = [
 		"notfound.extension",
 		"sphinx_tabs.tabs",
 		"sphinx-prompt",
+		"sphinx_autodoc_typehints",
+		"sphinx.ext.autosummary",
+		"autodocsumm",
+		"sphinx_copybutton",
+		"sphinxcontrib.default_values",
+		"sphinxcontrib.toctree_plus",
+		# "sphinx_gitstamp",
 		]
 
 sphinxemoji_style = 'twemoji'
-todo_include_todos = bool(os.environ.get("SHOW_TODOS", False))
+todo_include_todos = bool(os.environ.get("SHOW_TODOS", 0))
+gitstamp_fmt = "%d %b %Y"
 
 templates_path = ['_templates']
 html_static_path = ['_static']
@@ -63,43 +73,35 @@ intersphinx_mapping = {
 		'python': ('https://docs.python.org/3/', None),
 		"NumPy": ('https://numpy.org/doc/stable/', None),
 		"SciPy": ('https://docs.scipy.org/doc/scipy/reference', None),
+		"Pandas": ('https://pandas.pydata.org/docs/', None),
 		"matplotlib": ('https://matplotlib.org', None),
 		"h5py": ('https://docs.h5py.org/en/latest/', None),
-		"Sphinx": ('https://www.sphinx-doc.org/en/stable/', None),
+		"Sphinx": ('https://www.sphinx-doc.org/en/master/', None),
 		"Django": ('https://docs.djangoproject.com/en/dev/', 'https://docs.djangoproject.com/en/dev/_objects/'),
 		"sarge": ('https://sarge.readthedocs.io/en/latest/', None),
 		"attrs": ('https://www.attrs.org/en/stable/', None),
 		}
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'domdf_sphinx_theme'
 html_theme_options = {
 		'logo_only': False,
 		}
 html_theme_path = ["../.."]
-# html_logo = "logo/pyms.png"
-html_show_sourcelink = False  # True will show link to source
+html_show_sourcelink = True  # True will show link to source
 
 html_context = {
 		'display_github': True,
 		'github_user': 'domdfcoding',
 		'github_repo': 'si_unit_pandas',
 		'github_version': 'master',
-		'conf_py_path': '/',
+		'conf_py_path': '/doc-source/',
 		}
 
 htmlhelp_basename = slug
 
-latex_documents = [
-		('index', f'{slug}.tex', project, author, 'manual'),
-		]
-
-man_pages = [
-		('index', slug, project, [author], 1)
-		]
-
-texinfo_documents = [
-		('index', slug, project, author, slug, project, 'Miscellaneous'),
-		]
+latex_documents = [('index', f'{slug}.tex', project, author, 'manual')]
+man_pages = [('index', slug, project, [author], 1)]
+texinfo_documents = [('index', slug, project, author, slug, project, 'Miscellaneous')]
 
 
 # Extensions to theme docs
@@ -117,14 +119,14 @@ def setup(app):
 							'type',
 							label=_('Type'),
 							has_arg=False,
-							names=('type',),
-							bodyrolename='class'
+							names=('type', ),
+							bodyrolename='class',
 							),
 					Field(
 							'default',
 							label=_('Default'),
 							has_arg=False,
-							names=('default',),
+							names=('default', ),
 							),
 					]
 			)
