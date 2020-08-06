@@ -6,16 +6,16 @@
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+#  it under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
@@ -56,11 +56,15 @@ import operator
 import re
 
 # 3rd party
-import numpy as np
-from pandas.core.arrays import ExtensionArray
+import numpy as np  # type: ignore
+from pandas.core.arrays import ExtensionArray  # type: ignore
 
 
 class NumPyBackedExtensionArrayMixin(ExtensionArray):
+	"""
+	Mixin for pandas extension backed by a numpy array.
+	"""
+
 	@property
 	def dtype(self):
 		"""
@@ -79,9 +83,9 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 
 	@property
 	def shape(self):
-		return (len(self.data),)
+		return (len(self.data), )
 
-	def __len__(self):
+	def __len__(self) -> int:
 		return len(self.data)
 
 	def __getitem__(self, *args):
@@ -95,6 +99,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 		"""
 		Set the 'value' inplace.
 		"""
+
 		# I think having a separate than __setitem__ is good
 		# since we have to return here, but __setitem__ doesn't.
 
@@ -108,7 +113,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 	def _formatting_values(self):
 		return np.array(self._format_values(), dtype='object')
 
-	def copy(self, deep=False):
+	def copy(self, deep: bool = False):
 		return type(self)(self.data.copy())
 
 	@classmethod
@@ -121,8 +126,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 	def argsort(self, axis=-1, kind='quicksort', order=None):
 		return self.data.argsort()
 
-	def unique(self):
-		# type: () -> ExtensionArray
+	def unique(self) -> ExtensionArray:
 		# https://github.com/pandas-dev/pandas/pull/19869
 		_, indices = np.unique(self.data, return_index=True)
 		data = self.data.take(np.sort(indices))
@@ -130,6 +134,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 
 
 class Celsius(float):
+
 	def __init__(self, value):
 		if isinstance(value, str):
 			value = re.split("[\u205F\u2103\u00B0C]", value)[0]
@@ -139,18 +144,19 @@ class Celsius(float):
 	def __new__(cls, value):
 		return float.__new__(cls, value)
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return f"{float(self)}\u205F\u2103"
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		# return f"<{self.__class__.__name__} object with value {float(self)}>"
 		return str(self)
 
 
 class Fahrenheit(float):
-	def __str__(self):
+
+	def __str__(self) -> str:
 		return f"{float(self)}\u205F\u2109"
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		# return f"<{self.__class__.__name__} object with value {float(self)}>"
 		return str(self)

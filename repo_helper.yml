@@ -10,9 +10,6 @@ short_desc: 'Custom Pandas dtypes for values with SI units.'
 #enable_tests: False
 enable_conda: False
 
-#additional_ignore:
-#  -
-
 python_deploy_version: 3.6
 
 # Versions to run tests for
@@ -36,6 +33,3 @@ classifiers:
   - 'Intended Audience :: Developers'
   - 'Operating System :: OS Independent'
   - 'Topic :: Utilities'
-
-#extra_sphinx_extensions:
-#  -

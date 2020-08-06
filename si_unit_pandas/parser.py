@@ -6,16 +6,16 @@
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+#  it under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
@@ -52,35 +52,40 @@
 #
 
 # 3rd party
-import numpy as np
-from pandas.api.types import is_list_like
+from typing import Any, Sequence, Union
+
+import numpy as np  # type: ignore
+from pandas.api.types import is_list_like  # type: ignore
 
 # this package
 from .base import Celsius, Fahrenheit
-from .temperature_array import TemperatureArray
+from .temperature_array import TemperatureArray, CelsiusType
+
+_to_temp_types = Union[float, str, Sequence[Union[float, str]]]
 
 
-def to_temperature(values):
-	"""Convert values to TemperatureArray
+def to_temperature(values: _to_temp_types) -> TemperatureArray:
+	"""
+	Convert values to a TemperatureArray
 
-	Parameters
-	----------
-	values : int, float, str, Celsius or Farenheit, or sequence of those
+	:param values: int, float, str, Celsius or Fahrenheit, or sequence of those
 
-	Returns
-	-------
-	addresses : TemperatureArray
-
+	:return:
 	"""
 
-	if not is_list_like(values):
-		values = [values]
+	if is_list_like(values):
+		return TemperatureArray(_to_temperature_array(values))
+	else:
+		return TemperatureArray(_to_temperature_array([values]))
 
-	return TemperatureArray(_to_temperature_array(values))
 
+def _to_temperature_array(values: Union[TemperatureArray, np.ndarray, Sequence[Union[str, float]]]) -> np.ndarray:  # : Union[TemperatureArray, np.ndarray]
+	"""
 
-def _to_temperature_array(values):
-	from .temperature_array import CelsiusType, TemperatureArray
+	:param values:
+
+	:return:
+	"""
 
 	if isinstance(values, TemperatureArray):
 		return values.data
@@ -93,16 +98,20 @@ def _to_temperature_array(values):
 		values = values.astype(float)
 		values = np.asarray(values, dtype=CelsiusType._record_type)
 
-	elif not (
-			isinstance(values, np.ndarray)
-			and values.dtype == CelsiusType._record_type
-		):
+	elif not (isinstance(values, np.ndarray) and values.dtype == CelsiusType._record_type):
 		values = _to_int_pairs(values)
 
 	return np.atleast_1d(np.asarray(values, dtype=CelsiusType._record_type))
 
 
-def _to_int_pairs(values):
+def _to_int_pairs(values: _to_temp_types):
+	"""
+
+	:param values:
+
+	:return:
+	"""
+
 	if isinstance(values, (str, int, float, Celsius)):
 		if isinstance(values, Fahrenheit):
 			values = (values - 32) * (5 / 9)
@@ -119,7 +128,7 @@ def _to_int_pairs(values):
 			if isinstance(v, Fahrenheit):
 				new_values.append((v - 32) * (5 / 9))
 			else:
-				new_values.append(v)
+				new_values.append(float(v))
 
 		values = [float(v) for v in new_values]
 	return values

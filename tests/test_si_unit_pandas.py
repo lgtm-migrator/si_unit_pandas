@@ -6,16 +6,16 @@
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+#  it under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
@@ -55,10 +55,10 @@
 import operator
 
 # 3rd party
-import numpy
-import numpy.testing as npt
-import pandas
-import pandas.util.testing as tm
+import numpy  # type: ignore
+import numpy.testing as npt  # type: ignore
+import pandas  # type: ignore
+import pandas.util.testing as tm  # type: ignore
 import pytest
 import six
 from hypothesis import example, given
@@ -71,22 +71,21 @@ from si_unit_pandas.base import Celsius
 
 def test_make_container():
 	values = si_unit_pandas.TemperatureArray([1, 2, 3])
-	npt.assert_array_equal(
-			values.data,
-			numpy.array([1, 2, 3], dtype=values.dtype._record_type)
-			)
+	npt.assert_array_equal(values.data, numpy.array([1, 2, 3], dtype=values.dtype._record_type))
 
 
 def test_repr_works():
-	values = si_unit_pandas.TemperatureArray([0, 1, 2, 3, 2 ** 32, 2 ** 64 + 1])
+	values = si_unit_pandas.TemperatureArray([0, 1, 2, 3, 2**32, 2**64 + 1])
 	result = repr(values)
-	expected = ('TemperatureArray([0.0\u205f℃, 1.0\u205f℃, 2.0\u205f℃, 3.0\u205f℃, '
-				'4294967296.0\u205f℃, 1.8446744073709552e+19\u205f℃])')
+	expected = (
+			'TemperatureArray([0.0\u205f℃, 1.0\u205f℃, 2.0\u205f℃, 3.0\u205f℃, '
+			'4294967296.0\u205f℃, 1.8446744073709552e+19\u205f℃])'
+			)
 	assert result == expected
 
 
 def test_isna():
-	v = si_unit_pandas.TemperatureArray([0, 2, 2 ** 64, 2 ** 64 + 1, 2 ** 64 + 2])
+	v = si_unit_pandas.TemperatureArray([0, 2, 2**64, 2**64 + 1, 2**64 + 2])
 	r1 = v.isna()
 	r2 = pandas.isna(v)
 	expected = numpy.array([False, False, False, False, False])

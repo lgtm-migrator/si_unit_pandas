@@ -6,16 +6,16 @@
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+#  it under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
@@ -51,28 +51,29 @@
 #  |  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+# 3rd party
 import pytest
 
+# this package
 from si_unit_pandas import parser
 from si_unit_pandas.temperature_array import TemperatureArray
 
 
 @pytest.mark.parametrize('values', [62, "62", "62.0"])
 def test_to_temperature(values):
-    result = parser.to_temperature(values)
-    expected = TemperatureArray([62.0])
-    assert result.equals(expected)
+	result = parser.to_temperature(values)
+	expected = TemperatureArray([62.0])
+	assert result.equals(expected)
 
 
 def test_to_temperature_edge():
-    ip_int = 2 ** 64
-    result = parser.to_temperature([ip_int])[0]
-    assert int(result) == ip_int
+	ip_int = 2**64
+	result = parser.to_temperature([ip_int])[0]
+	assert int(result) == ip_int
 
 
 def test_to_temperature_scalar():
-    result = parser.to_temperature(1)
-    expected = parser.to_temperature([1])
-    assert len(result) == 1
-    assert all(result == expected)
-
+	result = parser.to_temperature(1)
+	expected = parser.to_temperature([1])
+	assert len(result) == 1
+	assert all(result == expected)

@@ -1,3 +1,4 @@
+# this package
 from si_unit_pandas.temperature_array import Celsius, TemperatureArray
 
 # print(Celsius(24))
@@ -20,7 +21,8 @@ for x in arr:
 # print(TemperatureArray([0]).isna())
 # print(TemperatureArray([]).na_value)
 
-import pandas
+# 3rd party
+import pandas  # type: ignore
 
 df = pandas.DataFrame({"Hour": [1, 2, 3, 4, 5], "Average Temperature": arr})
 print(df)

@@ -6,16 +6,16 @@
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+#  it under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
@@ -57,13 +57,17 @@ import collections
 import ipaddress
 
 # 3rd party
-import numpy
-import pandas
+from typing import Sequence, Type, Union
+
+import numpy  # type: ignore
+import pandas  # type: ignore
 import six
-from pandas.api.extensions import ExtensionDtype
+from pandas.api.extensions import ExtensionDtype  # type: ignore
 
 # this package
 from .base import Celsius, Fahrenheit, NumPyBackedExtensionArrayMixin
+
+_to_temp_types = Union[float, str, Sequence[Union[float, str]]]
 
 
 # -----------------------------------------------------------------------------
@@ -72,7 +76,7 @@ from .base import Celsius, Fahrenheit, NumPyBackedExtensionArrayMixin
 
 
 @six.add_metaclass(abc.ABCMeta)
-class TemperatureBase(object):
+class TemperatureBase:
 	"""Metaclass providing a common base class for Temperatures."""
 	pass
 
@@ -83,10 +87,10 @@ TemperatureBase.register(Fahrenheit)
 
 @pandas.api.extensions.register_extension_dtype
 class CelsiusType(ExtensionDtype):
-	name = 'celsius'
-	type = TemperatureBase
-	kind = 'O'
-	_record_type = numpy.float
+	name: str = 'celsius'
+	type: Type = TemperatureBase
+	kind: str = 'O'
+	_record_type: Type = numpy.float
 	na_value = numpy.nan
 
 	@classmethod
@@ -97,7 +101,7 @@ class CelsiusType(ExtensionDtype):
 			raise TypeError(f"Cannot construct a '{cls.__name__}' from '{string}'")
 
 	@classmethod
-	def construct_array_type(cls):
+	def construct_array_type(cls) -> Type["TemperatureArray"]:
 		return TemperatureArray
 
 
@@ -107,7 +111,8 @@ class CelsiusType(ExtensionDtype):
 
 
 class TemperatureArray(NumPyBackedExtensionArrayMixin):
-	"""Holder for Temperatures.
+	"""
+	Holder for Temperatures.
 
 	TemperatureArray is a container for Temperatures. It satisfies pandas'
 	extension array interface, and so can be stored inside
@@ -116,36 +121,34 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 	See :ref:`usage` for more.
 	"""
 
-	__array_priority__ = 1000
+	__array_priority__: int = 1000
 	_dtype = CelsiusType()
-	_itemsize = 16
-	ndim = 1
-	can_hold_na = True
+	_itemsize: int = 16
+	ndim: int = 1
+	can_hold_na: bool = True
 
-	def __init__(self, values, dtype=None, copy=False):
+	def __init__(self, values, dtype=None, copy: bool = False):
+		# this package
 		from .parser import _to_temperature_array
 
 		values = _to_temperature_array(values)  # TODO: avoid potential copy
+
 		# TODO: dtype?
+
 		if copy:
 			values = values.copy()
+
 		self.data = values
 
 	@classmethod
-	def _from_ndarray(cls, data, copy=False):
+	def _from_ndarray(cls, data: numpy.ndarray, copy: bool = False) -> "TemperatureArray":
 		"""
 		Zero-copy construction of a TemperatureArray from an ndarray.
 
-		Parameters
-		----------
-		data : ndarray
-			This should have CelsiusType._record_type dtype
-		copy : bool, default False
-			Whether to copy the data.
+		:param data: This should have CelsiusType._record_type dtype
+		:param copy: Whether to copy the data.
 
-		Returns
-		-------
-		ExtensionArray
+		:return:
 		"""
 
 		if copy:
@@ -161,19 +164,18 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 	# -------------------------------------------------------------------------
 	@property
 	def na_value(self):
-		"""The missing value
+		"""
+		The missing value
 
-		``numpy.nan`` is used
+		**Examples**
 
-		Examples
-		--------
 		>>> TemperatureArray([]).na_value
 		``numpy.nan``
 		"""
 
 		return self.dtype.na_value
 
-	def take(self, indices, allow_fill=False, fill_value=None):
+	def take(self, indices, allow_fill: bool = False, fill_value=None):
 		# Can't use pandas' take yet
 		# 1. axis
 		# 2. I don't know how to do the reshaping correctly.
@@ -194,10 +196,13 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 					raise IndexError(msg)
 				else:
 					# all NA take from and empty array
-					took = (numpy.full(
-							(len(indices), 2),
-							fill_value, dtype='>u8',
-							).reshape(-1).astype(self.dtype._record_type))
+					took = (
+							numpy.full(
+									(len(indices), 2),
+									fill_value,
+									dtype='>u8',
+									).reshape(-1).astype(self.dtype._record_type)
+							)
 					return self._from_ndarray(took)
 			if (indices < -1).any():
 				msg = "Invalid value in 'indicies'. Must be all >= -1 for 'allow_fill=True'"
@@ -213,33 +218,50 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 	# Interfaces
 	# -------------------------------------------------------------------------
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		formatted = self._format_values()
 		return f"TemperatureArray({formatted!r})"
 
 	def _format_values(self):
 		formatted = []
+
 		# TODO: perf
+
 		for i in range(len(self)):
 			formatted.append(Celsius(self.data[i]))
+
 		return formatted
 
 	@property
 	def _parser(self):
+		# this package
 		from .parser import to_temperature
+
 		return to_temperature
 
-	def append(self, value):
+	def append(self, value: _to_temp_types):
+		"""
+		Append a value to this TemperatureArray.
+
+		:param value:
+		:type value:
+
+		:return:
+		:rtype:
+		"""
+
+		# this package
 		from .parser import to_temperature
 
-		value = to_temperature(value).data
-		self.data = numpy.append(self.data, value)
+		self.data = numpy.append(self.data, to_temperature(value).data)
 
 	def __setitem__(self, key, value):
+		# this package
 		from .parser import to_temperature
 
 		value = to_temperature(value).data
 		self.data[key] = value
+
 	#
 	# def __iter__(self):
 	# 	from .parser import to_temperature
@@ -251,7 +273,7 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 			if copy:
 				self = self.copy()
 			return self
-		return super(TemperatureArray, self).astype(dtype)
+		return super().astype(dtype)
 
 	# ------------------------------------------------------------------------
 	# Ops
@@ -267,9 +289,9 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		return result
 
 	def __lt__(self, other):
-		# TDOO: scalar ipaddress
 		if not isinstance(other, TemperatureArray):
 			return NotImplemented
+
 		mask = self.isna() | other.isna()
 		result = (self.data <= other.data)
 		result[mask] = False
@@ -278,6 +300,7 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 	def __le__(self, other):
 		if not isinstance(other, TemperatureArray):
 			return NotImplemented
+
 		mask = self.isna() | other.isna()
 		result = (self.data <= other.data)
 		result[mask] = False
@@ -286,18 +309,30 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 	def __gt__(self, other):
 		if not isinstance(other, TemperatureArray):
 			return NotImplemented
+
 		return other < self
 
 	def __ge__(self, other):
 		if not isinstance(other, TemperatureArray):
 			return NotImplemented
+
 		return other <= self
 
 	def equals(self, other):
+		"""
+
+		:param other:
+		:type other:
+
+		:return:
+		:rtype:
+		"""
+
 		if not isinstance(other, TemperatureArray):
-			raise TypeError("Cannot compare 'TemperatureArray' "
-							"to type '{}'".format(type(other)))
+			raise TypeError(f"Cannot compare 'TemperatureArray' to type '{type(other)}'")
+
 		# TODO: missing
+
 		return (self.data == other.data).all()
 
 	def _values_for_factorize(self):
@@ -307,43 +342,32 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		"""
 		Indicator for whether each element is missing.
 
-		A temperature of 0.0 ℃ is used to indecate missing values.
+		A temperature of 0.0 ℃ is used to indicate missing values.
 
-		Examples
-		--------
+		**Examples**
+
 		>>> TemperatureArray([0, 14]).isna()
 		array([ True, False])
 		"""
 
 		return self.data == self.na_value
 
-	def isin(self, other):
-		"""Check whether elements of `self` are in `other`.
+	def isin(self, other) -> numpy.ndarray:
+		"""
+		Check whether elements of `self` are in `other`.
 
 		Comparison is done elementwise.
 
-		Parameters
-		----------
-		other : str or sequences
-			For ``str`` `other`, the argument is attempted to
-			be converted to an :class:`ipaddress.IPv4Network` or
-			a :class:`ipaddress.IPv6Network` or an :class:`IPArray`.
-			If all those conversions fail, a TypeError is raised.
+		:param other:
+		:type other: str or sequences
 
-			For a sequence of strings, the same conversion is attempted.
-			You should not mix networks with addresses.
-
-			Finally, other may be an ``IPArray`` of addresses to compare to.
-
-		Returns
-		-------
-		contained : ndarray
-			A 1-D boolean ndarray with the same length as self.
-
+		:return: A 1-D boolean ndarray with the same length as self.
 		"""
-		box = (isinstance(other, str) or
-			   not isinstance(other, (TemperatureArray, collections.Sequence)))
-		if box:
+
+		if (
+				isinstance(other, (str, float))
+				or not isinstance(other, (TemperatureArray, collections.Sequence))
+			):
 			other = [other]
 
 		temperatures = []
@@ -355,7 +379,6 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 		else:
 			temperatures = other
 
-		# Flatten all the addresses
 		temperatures = TemperatureArray(temperatures)  # TODO: think about copy=False
 
 		mask = numpy.zeros(len(self), dtype='bool')
@@ -369,7 +392,9 @@ class TemperatureArray(NumPyBackedExtensionArrayMixin):
 
 def is_temperature_type(obj):
 	t = getattr(obj, 'dtype', obj)
+
 	try:
 		return isinstance(t, CelsiusType) or issubclass(t, CelsiusType)
+
 	except Exception:
 		return False

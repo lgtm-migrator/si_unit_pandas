@@ -6,16 +6,16 @@
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
 #  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
+#  it under the terms of the GNU Lesser General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Lesser General Public License
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
@@ -55,11 +55,12 @@
 import operator
 
 # 3rd party
-import numpy
-import pandas
-import pandas.testing as tm
+import numpy  # type: ignore
+import pandas  # type: ignore
+import pandas.testing as tm  # type: ignore
 import pytest
 
+# this package
 import si_unit_pandas
 
 
@@ -70,11 +71,11 @@ def series():
 
 @pytest.fixture
 def frame():
-	return pandas.DataFrame(
-			{"A": si_unit_pandas.TemperatureArray([0, 1, 2]),
-			 "B": [0, 1, 2],
-			 "C": si_unit_pandas.TemperatureArray([0, 1, 2])}
-			)
+	return pandas.DataFrame({
+			"A": si_unit_pandas.TemperatureArray([0, 1, 2]),
+			"B": [0, 1, 2],
+			"C": si_unit_pandas.TemperatureArray([0, 1, 2])
+			})
 
 
 @pytest.fixture(params=['series', 'frame'])
@@ -157,16 +158,17 @@ def test_loc_frame(frame):
 
 def test_reindex(frame):
 	result = frame.reindex([0, 10])
-	expected = pandas.DataFrame({"A": si_unit_pandas.TemperatureArray([0, numpy.nan]),
-							 "B": [0, numpy.nan],
-							 "C": si_unit_pandas.TemperatureArray([0, numpy.nan])},
+	expected = pandas.DataFrame({
+			"A": si_unit_pandas.TemperatureArray([0, numpy.nan]),
+			"B": [0, numpy.nan],
+			"C": si_unit_pandas.TemperatureArray([0, numpy.nan])
+			},
 								index=[0, 10])
 	tm.assert_frame_equal(result, expected)
 
 
 def test_isna(series):
-	expected = pandas.Series([False, False, False], index=series.index,
-							 name=series.name)
+	expected = pandas.Series([False, False, False], index=series.index, name=series.name)
 	result = pandas.isna(series)
 	tm.assert_series_equal(result, expected)
 
@@ -176,9 +178,9 @@ def test_isna(series):
 
 def test_isna_frame(frame):
 	result = frame.isna()
-	expected = pandas.DataFrame({"A": [False, False, False],
-							 "B": [False, False, False],
-							 "C": [False, False, False]})
+	expected = pandas.DataFrame({
+			"A": [False, False, False], "B": [False, False, False], "C": [False, False, False]
+			})
 	tm.assert_frame_equal(result, expected)
 
 
