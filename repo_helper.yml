@@ -4,7 +4,7 @@ author: "Dominic Davis-Foster"
 email: "dominic@davis-foster.co.uk"
 version: "0.0.1"
 username: "domdfcoding"
-license: 'LGPLv3+'
+license: 'BSD-3-Clause'
 short_desc: 'Custom Pandas dtypes for values with SI units.'
 
 #enable_tests: False
