@@ -126,19 +126,19 @@ def test_isna(series):
 def test_isna_frame(frame):
 	result = frame.isna()
 	expected = pandas.DataFrame({
-			'A': [False, False, False], 'B': [False, False, False], 'C': [False, False, False]
+			'A': [False, False, False],
+			'B': [False, False, False],
+			'C': [False, False, False],
 			})
 	tm.assert_frame_equal(result, expected)
 
 
-@pytest.mark.xfail(reason="Not implemented")
 def test_fillna():
 	result = pandas.Series(si_unit_pandas.TemperatureArray([1, numpy.nan])).fillna(method="ffill")
 	expected = pandas.Series(si_unit_pandas.TemperatureArray([1, 1]))
 	tm.assert_series_equal(result, expected)
 
 
-@pytest.mark.xfail(reason="Not implemented")
 def test_dropna():
 	missing = pandas.Series(si_unit_pandas.TemperatureArray([1, numpy.nan]))
 	result = missing.dropna()

@@ -2,18 +2,17 @@
 import numpy  # type: ignore
 import pandas  # type: ignore
 import pandas.testing as tm  # type: ignore
-import pytest
 from hypothesis import given
 from hypothesis.strategies import integers, lists
+from pandas._testing import assert_numpy_array_equal  # type: ignore
 from pandas.core.internals import ExtensionBlock  # type: ignore
 
 # this package
 import si_unit_pandas
-from si_unit_pandas.base import Celsius
-
 # ----------------------------------------------------------------------------
 # Block Methods
 # ----------------------------------------------------------------------------
+from si_unit_pandas import Celsius
 
 
 def test_concatenate_blocks():
@@ -101,27 +100,28 @@ def test_argsort(ints):
 # ---------
 
 
-@pytest.mark.xfail(reason="TODO")
 def test_factorize():
 	arr = si_unit_pandas.TemperatureArray([1, 1, 10, 10])
 	labels, uniques = pandas.factorize(arr)
 
 	expected_labels = numpy.array([0, 0, 1, 1])
-	tm.assert_numpy_array_equal(labels, expected_labels)
+	assert_numpy_array_equal(labels, expected_labels)
 
 	expected_uniques = si_unit_pandas.TemperatureArray([1, 10])
 	assert uniques.equals(expected_uniques)
 
 
-@pytest.mark.xfail(reason="TODO")
 def test_groupby_make_grouper():
 	df = pandas.DataFrame({'A': [1, 1, 2, 2], 'B': si_unit_pandas.TemperatureArray([1, 1, 2, 2])})
+	print(df)
+	print(df.to_string())
 	gr = df.groupby('B')
 	result = gr.grouper.groupings[0].grouper
+	print(result)
+	print(df.B.values)
 	assert result.equals(df.B.values)
 
 
-@pytest.mark.xfail(reason="TODO")
 def test_groupby_make_grouper_groupings():
 	df = pandas.DataFrame({'A': [1, 1, 2, 2], 'B': si_unit_pandas.TemperatureArray([1, 1, 2, 2])})
 	p1 = df.groupby('A').grouper.groupings[0]

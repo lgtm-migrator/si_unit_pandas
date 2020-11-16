@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#  temperature_array.py
+#  temperature.py
 #
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
@@ -33,26 +33,32 @@
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-#  _isstringslice based on awkward-array
-#  https://github.com/scikit-hep/awkward-array
-#  Copyright (c) 2018-2019, Jim Pivarski
-#  Licensed under the BSD 3-Clause License
 
 # stdlib
 import abc
-import collections
-from typing import Sequence, Type, Union
+import operator
+import re
+from typing import Any, Sequence, Type, TypeVar, Union
 
 # 3rd party
 import numpy  # type: ignore
 import pandas  # type: ignore
-import six
+from domdf_python_tools import doctools
 from pandas.api.extensions import ExtensionDtype  # type: ignore
+from pandas.core.dtypes.inference import is_list_like  # type: ignore
 
 # this package
-from .base import Celsius, Fahrenheit, NumPyBackedExtensionArrayMixin
+from si_unit_pandas.base import BaseArray, UserFloat
 
-__all__ = ["CelsiusType", "TemperatureArray", "TemperatureBase", "is_temperature_type"]
+__all__ = [
+		"Celsius",
+		"CelsiusType",
+		"Fahrenheit",
+		"TemperatureArray",
+		"TemperatureBase",
+		"is_temperature_type",
+		"to_temperature"
+		]
 
 _to_temp_types = Union[float, str, Sequence[Union[float, str]]]
 
@@ -65,6 +71,54 @@ class TemperatureBase(metaclass=abc.ABCMeta):
 	"""
 	Metaclass providing a common base class for Temperatures.
 	"""
+
+
+@doctools.append_docstring_from(float)
+class Celsius(UserFloat):
+	"""
+	:class:`float` subclass representing a temperature in Celsius.
+	"""
+
+	def __init__(self, value):
+		if isinstance(value, str):
+			value = re.split("[ ℃°C]", value)[0]
+
+		super().__init__(value)
+
+	def __str__(self) -> str:
+		"""
+		Return the temperature as a string.
+		"""
+
+		return f"{float(self)}\u205F\u2103"
+
+	def __repr__(self) -> str:
+		"""
+		Return a string representation of the temperature.
+		"""
+
+		return str(self)
+
+
+@doctools.append_docstring_from(float)
+class Fahrenheit(UserFloat):
+	"""
+	:class:`float` subclass representing a temperature in Fahrenheit.
+	"""
+
+	def __str__(self) -> str:
+		"""
+		Return the temperature as a string.
+		"""
+
+		return f"{float(self)}\u205F\u2109"
+
+	def __repr__(self) -> str:
+		"""
+		Return a string representation of the temperature.
+		"""
+
+		return str(self)
 
 
 TemperatureBase.register(Celsius)
@@ -98,6 +152,7 @@ class CelsiusType(ExtensionDtype):
 		They'll be excluded from operations that exclude non-numeric
 		columns, like (groupby) reductions, plotting, etc.
 		"""
+
 		return True
 
 	@property
@@ -112,6 +167,7 @@ class CelsiusType(ExtensionDtype):
 		* is_bool
 		* boolean indexing
 		"""
+
 		return True
 
 
@@ -119,8 +175,10 @@ class CelsiusType(ExtensionDtype):
 # Extension Container
 # -----------------------------------------------------------------------------
 
+_A = TypeVar("_A")
 
-class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtensionArrayMixin):
+
+class TemperatureArray(BaseArray):
 	"""
 	Holder for Temperatures.
 
@@ -132,15 +190,11 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 	__array_priority__: int = 1000
 	_dtype = CelsiusType()
 	_itemsize: int = 16
-	ndim: int = 1
 	can_hold_na: bool = True
 
 	def __init__(self, data, dtype=None, copy: bool = False):
-		# this package
-		from .parser import _to_temperature_array
 
 		# The dtype is always CelsiusType
-
 		data = _to_temperature_array(data)  # TODO: avoid potential copy
 
 		if copy:
@@ -148,87 +202,37 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 
 		self.data = data
 
-	@classmethod
-	def _from_ndarray(cls, data: numpy.ndarray, copy: bool = False) -> "TemperatureArray":
+	def __getitem__(self, item: Union[int, slice, numpy.ndarray]) -> Any:
 		"""
-		Zero-copy construction of a TemperatureArray from an ndarray.
+		Select a subset of self.
 
-		:param data: This should have CelsiusType._record_type dtype
-		:param copy: Whether to copy the data.
+		:param item:
+			* int: The position in 'self' to get.
 
-		:return:
-		"""
+			* slice: A slice object, where 'start', 'stop', and 'step' are integers or None.
 
-		if copy:
-			data = data.copy()
+			* ndarray: A 1-d boolean NumPy ndarray the same length as 'self'
 
-		new = TemperatureArray([])
-		new.data = data
+		:rtype: scalar or ExtensionArray
 
-		return new
+		.. note::
 
-	# -------------------------------------------------------------------------
-	# Properties
-	# -------------------------------------------------------------------------
-	@property
-	def na_value(self):
-		"""
-		The missing value
+			For scalar ``item``, return a scalar value suitable for the array's
+			type. This should be an instance of ``self.dtype.type``.
 
-		**Examples**
+			For slice ``key``, return an instance of ``ExtensionArray``, even
+			if the slice is length 0 or 1.
 
-		>>> TemperatureArray([]).na_value
-		``numpy.nan``
+			For a boolean mask, return an instance of ``ExtensionArray``, filtered
+			to the values where ``item`` is True.
 		"""
 
-		return self.dtype.na_value
+		result = operator.getitem(self.data, item)
 
-	def take(self, indices, allow_fill: bool = False, fill_value=None):
-		# Can't use pandas' take yet
-		# 1. axis
-		# 2. I don't know how to do the reshaping correctly.
-
-		indices = numpy.asarray(indices, dtype="int")
-
-		if allow_fill and fill_value is None:
-			fill_value = self.na_value
-		elif allow_fill and not isinstance(fill_value, tuple):
-			if not numpy.isnan(fill_value):
-				fill_value = int(fill_value)
-
-		if allow_fill:
-			mask = (indices == -1)
-			if not len(self):
-				if not (indices == -1).all():
-					msg = "Invalid take for empty array. Must be all -1."
-					raise IndexError(msg)
-				else:
-					# all NA take from and empty array
-					took = (
-							numpy.full(
-									(len(indices), 2),
-									fill_value,
-									dtype=">u8",
-									).reshape(-1).astype(self.dtype._record_type)
-							)
-					return self._from_ndarray(took)
-			if (indices < -1).any():
-				msg = "Invalid value in 'indicies'. Must be all >= -1 for 'allow_fill=True'"
-				raise ValueError(msg)
-
-		took = self.data.take(indices)
-		if allow_fill:
-			took[mask] = fill_value
-
-		return self._from_ndarray(took)
-
-	# -------------------------------------------------------------------------
-	# Interfaces
-	# -------------------------------------------------------------------------
-
-	def __repr__(self) -> str:
-		formatted = self._format_values()
-		return f"TemperatureArray({formatted!r})"
+		if result.ndim == 0:
+			return Celsius(result.item())
+		else:
+			return type(self)(result)
 
 	def _format_values(self):
 		formatted = []
@@ -242,42 +246,16 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 
 	@property
 	def _parser(self):
-		# this package
-		from .parser import to_temperature
-
 		return to_temperature
 
-	def append(self, value: _to_temp_types):
+	def append(self, value: _to_temp_types) -> None:
 		"""
 		Append a value to this TemperatureArray.
 
 		:param value:
-		:type value:
-
-		:return:
-		:rtype:
 		"""
 
-		# this package
-		from .parser import to_temperature
-
-		self.data = numpy.append(self.data, to_temperature(value).data)
-
-	def __setitem__(self, key, value):
-		# this package
-		from .parser import to_temperature
-
-		value = to_temperature(value).data
-		self.data[key] = value
-
-	def __delitem__(self, where):
-		if isinstance(where, str):
-			del self.data[where]
-		elif _isstringslice(where):
-			for x in where:
-				del self.data[x]
-		else:
-			raise TypeError(f"invalid index for removing column from Table: {where}")
+		super().append(value)
 
 	def astype(self, dtype, copy=True):
 		if isinstance(dtype, CelsiusType):
@@ -286,51 +264,35 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 			return self
 		return super().astype(dtype)
 
-	# ------------------------------------------------------------------------
-	# Ops
-	# ------------------------------------------------------------------------
-
-	def isna(self):
-		"""
-		Indicator for whether each element is missing.
-		"""
-
-		if numpy.isnan(self.na_value):
-			return numpy.isnan(self.data)
-		else:
-			return self.data == self.na_value
-
-	def isin(self, other) -> numpy.ndarray:
+	def isin(self, other: _to_temp_types) -> numpy.ndarray:
 		"""
 		Check whether elements of `self` are in `other`.
 
 		Comparison is done elementwise.
 
 		:param other:
-		:type other: str or sequences
 
 		:return: A 1-D boolean ndarray with the same length as self.
 		"""
 
-		if (isinstance(other, (str, float)) or not isinstance(other, (TemperatureArray, collections.Sequence))):
-			other = [other]
+		if isinstance(other, (str, float)) or not isinstance(other, (self.__class__, Sequence)):
+			other = [other]  # type: ignore
 
 		temperatures = []
 
-		if not isinstance(other, TemperatureArray):
+		if not isinstance(other, self.__class__):
 			for net in other:
 				net = Celsius(net)
 				temperatures.append(net)
 		else:
 			temperatures = other
 
-		temperatures = TemperatureArray(temperatures)  # TODO: think about copy=False
+		temperatures = self.__class__(temperatures)
 
 		mask = numpy.zeros(len(self), dtype="bool")
 		for network in temperatures:
 			mask |= self == network
 
-		# no... we should flatten this.
 		mask |= self == temperatures
 		return mask
 
@@ -340,31 +302,69 @@ def is_temperature_type(obj):
 
 	try:
 		return isinstance(t, CelsiusType) or issubclass(t, CelsiusType)
-
 	except Exception:
 		return False
 
 
-# From https://github.com/scikit-hep/awkward-array/blob/2bbdb68d7a4fff2eeaed81eb76195e59232e8c13/awkward/array/base.py#L611
-def _isstringslice(where):
-	if isinstance(where, str):
-		return True
-	elif isinstance(where, bytes):
-		raise TypeError("column selection must be str, not bytes, in Python 3")
-	elif isinstance(where, tuple):
-		return False
-	elif isinstance(where,
-					(numpy.ndarray, TemperatureArray)) and issubclass(where.dtype.type, (numpy.str, numpy.str_)):
-		return True
-	elif isinstance(where, (numpy.ndarray, TemperatureArray)) and issubclass(
-			where.dtype.type, (numpy.object, numpy.object_)
-			) and not issubclass(where.dtype.type, (numpy.bool, numpy.bool_)):
-		return len(where) > 0 and all(isinstance(x, str) for x in where)
-	elif isinstance(where, (numpy.ndarray, TemperatureArray)):
-		return False
-	try:
-		assert len(where) > 0 and all(isinstance(x, str) for x in where)
-	except (TypeError, AssertionError):
-		return False
+def to_temperature(values: _to_temp_types) -> TemperatureArray:
+	"""
+	Convert values to a TemperatureArray
+
+	:param values: int, float, str, Celsius or Fahrenheit, or sequence of those
+	"""
+
+	if is_list_like(values):
+		return TemperatureArray(_to_temperature_array(values))
 	else:
-		return True
+		return TemperatureArray(_to_temperature_array([values]))
+
+
+def _to_temperature_array(
+		values: Union[TemperatureArray, numpy.ndarray, Sequence[Union[str, float]]]
+		) -> numpy.ndarray:  # : Union[TemperatureArray, np.ndarray]
+	"""
+
+	:param values:
+	"""
+
+	if isinstance(values, TemperatureArray):
+		return values.data
+
+	if isinstance(values, numpy.ndarray) and values.ndim == 1 and numpy.issubdtype(values.dtype, numpy.integer):
+		values = values.astype(float)
+		values = numpy.asarray(values, dtype=CelsiusType._record_type)
+
+	elif not (isinstance(values, numpy.ndarray) and values.dtype == CelsiusType._record_type):
+		values = _to_int_pairs(values)
+
+	return numpy.atleast_1d(numpy.asarray(values, dtype=CelsiusType._record_type))
+
+
+def _to_int_pairs(values: _to_temp_types):
+	"""
+
+	:param values:
+
+	:return:
+	"""
+
+	if isinstance(values, (str, int, float, Celsius)):
+		if isinstance(values, Fahrenheit):
+			values = (values - 32) * (5 / 9)
+
+		return float(values)
+
+	elif isinstance(values, numpy.ndarray) and values.dtype != object:
+		if values.ndim != 2:
+			raise ValueError("'values' should be a 2-D when passing a NumPy array.")
+
+	else:
+		new_values = []
+		for v in values:
+			if isinstance(v, Fahrenheit):
+				new_values.append((v - 32) * (5 / 9))
+			else:
+				new_values.append(float(v))
+
+		values = [float(v) for v in new_values]
+	return values

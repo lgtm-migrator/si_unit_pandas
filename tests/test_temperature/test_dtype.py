@@ -4,7 +4,7 @@ import pytest
 
 # this package
 from si_unit_pandas import CelsiusType
-from si_unit_pandas.temperature_array import TemperatureArray, TemperatureBase
+from si_unit_pandas.temperature import TemperatureArray, TemperatureBase
 
 
 def test_celsius_type():

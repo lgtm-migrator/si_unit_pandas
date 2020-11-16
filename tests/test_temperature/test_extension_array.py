@@ -3,7 +3,7 @@ import numpy  # type: ignore
 import pytest
 
 # this package
-from si_unit_pandas.temperature_array import CelsiusType, TemperatureArray
+from si_unit_pandas import CelsiusType, TemperatureArray
 
 _non_empty_sets = [
 		{1},

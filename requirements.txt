@@ -1,5 +1,4 @@
 domdf-python-tools>=1.5.0
 numpy>=1.19.4
 pandas>=1.0.1
-six>=1.15.0
 typing-extensions>=3.7.4.3

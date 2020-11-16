@@ -38,9 +38,7 @@ Custom Pandas dtypes for values with SI units.
 #
 
 # this package
-from .base import Celsius, Fahrenheit
-from .parser import to_temperature
-from .temperature_array import CelsiusType, TemperatureArray
+from si_unit_pandas.temperature import Celsius, CelsiusType, Fahrenheit, TemperatureArray, to_temperature
 
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2020 Dominic Davis-Foster"
@@ -54,4 +52,6 @@ __all__ = [
 		"TemperatureArray",
 		"CelsiusType",
 		"to_temperature",
+		"Celsius",
+		"Fahrenheit",
 		]

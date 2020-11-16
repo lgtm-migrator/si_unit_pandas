@@ -6,14 +6,34 @@ import numpy  # type: ignore
 import numpy.testing as npt  # type: ignore
 import pandas  # type: ignore
 import pytest
-import six
 from hypothesis import example, given
 from hypothesis.strategies import integers, lists, tuples
 from pandas._testing import assert_numpy_array_equal  # type: ignore
 
 # this package
 import si_unit_pandas
-from si_unit_pandas.base import Celsius
+from si_unit_pandas import TemperatureArray, to_temperature
+from si_unit_pandas.temperature import Celsius
+
+
+@pytest.mark.parametrize("values", [62, "62", "62.0"])
+def test_to_temperature(values):
+	result = to_temperature(values)
+	expected = TemperatureArray([62.0])
+	assert result.equals(expected)
+
+
+def test_to_temperature_edge():
+	ip_int = 2**64
+	result = to_temperature([ip_int])[0]
+	assert int(result) == ip_int
+
+
+def test_to_temperature_scalar():
+	result = to_temperature(1)
+	expected = to_temperature([1])
+	assert len(result) == 1
+	assert all(result == expected)  # type: ignore
 
 
 def test_make_container():
@@ -79,7 +99,6 @@ def test_equality():
 		operator.ge,
 		operator.gt,
 		])
-@pytest.mark.skipif(six.PY2, reason="Flexible comparisons")
 def test_comparison_raises(op):
 	arr = si_unit_pandas.TemperatureArray([0, 1, 2])
 	with pytest.raises(TypeError):
