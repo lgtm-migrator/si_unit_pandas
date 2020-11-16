@@ -1,56 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-#
-#  test_si_unit_pandas.py
-#
-#  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU Lesser General Public License as published by
-#  the Free Software Foundation; either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
-#
-#  Based on cyberpandas
-#  https://github.com/ContinuumIO/cyberpandas
-#  Copyright (c) 2018, Anaconda, Inc.
-#  Licensed under the BSD 3-Clause License:
-#  |
-#  |  Redistribution and use in source and binary forms, with or without
-#  |  modification, are permitted provided that the following conditions are met:
-#  |
-#  |  * Redistributions of source code must retain the above copyright notice, this
-#  |    list of conditions and the following disclaimer.
-#  |
-#  |  * Redistributions in binary form must reproduce the above copyright notice,
-#  |    this list of conditions and the following disclaimer in the documentation
-#  |    and/or other materials provided with the distribution.
-#  |
-#  |  * Neither the name of the copyright holder nor the names of its
-#  |    contributors may be used to endorse or promote products derived from
-#  |    this software without specific prior written permission.
-#  |
-#  |  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-#  |  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-#  |  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-#  |  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-#  |  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-#  |  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-#  |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-#  |  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-#  |  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-#  |  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-
 # stdlib
 import operator
 
@@ -126,7 +73,7 @@ def test_equality():
 	assert result is False
 
 
-@pytest.mark.parametrize('op', [
+@pytest.mark.parametrize("op", [
 		operator.lt,
 		operator.le,
 		operator.ge,
@@ -196,7 +143,7 @@ def test_getitem_slice():
 	assert result.equals(expected)
 
 
-@pytest.mark.parametrize('value', [
+@pytest.mark.parametrize("value", [
 		10.0,
 		"10.0",
 		10,
@@ -238,7 +185,7 @@ def test_factorize():
 	assert_numpy_array_equal(uniques, expected_uniques)
 
 
-@pytest.mark.parametrize('values', [[0, 1, 2]])
+@pytest.mark.parametrize("values", [[0, 1, 2]])
 def test_from_ndarray(values):
 	result = si_unit_pandas.TemperatureArray(numpy.asarray(values))
 	expected = si_unit_pandas.TemperatureArray(values)

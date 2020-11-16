@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 #  __init__.py
 """
-Docstring Goes Here
+Custom Pandas dtypes for values with SI units.
 """
 #
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
@@ -51,8 +50,8 @@ __version__: str = "0.0.1"
 __email__: str = "dominic@davis-foster.co.uk"
 
 __all__ = [
-		'__version__',
-		'TemperatureArray',
-		'CelsiusType',
-		'to_temperature',
+		"__version__",
+		"TemperatureArray",
+		"CelsiusType",
+		"to_temperature",
 		]

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 #  temperature_array.py
 #
@@ -53,6 +52,8 @@ from pandas.api.extensions import ExtensionDtype  # type: ignore
 # this package
 from .base import Celsius, Fahrenheit, NumPyBackedExtensionArrayMixin
 
+__all__ = ["CelsiusType", "TemperatureArray", "TemperatureBase", "is_temperature_type"]
+
 _to_temp_types = Union[float, str, Sequence[Union[float, str]]]
 
 # -----------------------------------------------------------------------------
@@ -60,10 +61,10 @@ _to_temp_types = Union[float, str, Sequence[Union[float, str]]]
 # -----------------------------------------------------------------------------
 
 
-@six.add_metaclass(abc.ABCMeta)
-class TemperatureBase:
-	"""Metaclass providing a common base class for Temperatures."""
-	pass
+class TemperatureBase(metaclass=abc.ABCMeta):
+	"""
+	Metaclass providing a common base class for Temperatures.
+	"""
 
 
 TemperatureBase.register(Celsius)
@@ -72,7 +73,7 @@ TemperatureBase.register(Fahrenheit)
 
 @pandas.api.extensions.register_extension_dtype
 class CelsiusType(ExtensionDtype):
-	name: str = 'celsius'
+	name: str = "celsius"
 	type: Type = TemperatureBase
 	kind: str = 'O'
 	_record_type: Type = numpy.float
@@ -187,7 +188,7 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 		# 1. axis
 		# 2. I don't know how to do the reshaping correctly.
 
-		indices = numpy.asarray(indices, dtype='int')
+		indices = numpy.asarray(indices, dtype="int")
 
 		if allow_fill and fill_value is None:
 			fill_value = self.na_value
@@ -207,7 +208,7 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 							numpy.full(
 									(len(indices), 2),
 									fill_value,
-									dtype='>u8',
+									dtype=">u8",
 									).reshape(-1).astype(self.dtype._record_type)
 							)
 					return self._from_ndarray(took)
@@ -325,7 +326,7 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 
 		temperatures = TemperatureArray(temperatures)  # TODO: think about copy=False
 
-		mask = numpy.zeros(len(self), dtype='bool')
+		mask = numpy.zeros(len(self), dtype="bool")
 		for network in temperatures:
 			mask |= self == network
 
@@ -335,7 +336,7 @@ class TemperatureArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtens
 
 
 def is_temperature_type(obj):
-	t = getattr(obj, 'dtype', obj)
+	t = getattr(obj, "dtype", obj)
 
 	try:
 		return isinstance(t, CelsiusType) or issubclass(t, CelsiusType)

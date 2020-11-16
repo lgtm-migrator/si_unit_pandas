@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 #  parser.py
 #
@@ -43,8 +42,10 @@ import numpy as np  # type: ignore
 from pandas.api.types import is_list_like  # type: ignore
 
 # this package
-from .base import Celsius, Fahrenheit
-from .temperature_array import CelsiusType, TemperatureArray
+from si_unit_pandas.base import Celsius, Fahrenheit
+from si_unit_pandas.temperature_array import CelsiusType, TemperatureArray
+
+__all__ = ["to_temperature"]
 
 _to_temp_types = Union[float, str, Sequence[Union[float, str]]]
 

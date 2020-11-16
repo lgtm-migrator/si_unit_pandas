@@ -11,12 +11,12 @@ def test_celsius_type():
 	# https://pandas.pydata.org/docs/reference/api/pandas.api.extensions.ExtensionDtype.html
 	assert CelsiusType.name == "celsius"
 	assert CelsiusType.type is TemperatureBase
-	assert CelsiusType.kind == "O"
+	assert CelsiusType.kind == 'O'
 
 	obj = CelsiusType()
 	assert obj.name == "celsius"
 	assert obj.type is TemperatureBase
-	assert obj.kind == "O"
+	assert obj.kind == 'O'
 	assert obj.na_value is numpy.nan
 	assert obj.names is None
 

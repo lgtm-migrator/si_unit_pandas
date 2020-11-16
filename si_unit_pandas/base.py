@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 #  base.py
 #
@@ -46,6 +45,8 @@ from domdf_python_tools import doctools
 from pandas.core.arrays import ExtensionArray  # type: ignore
 from pandas.core.dtypes.generic import ABCExtensionArray  # type: ignore
 from typing_extensions import Literal
+
+__all__ = ["Celsius", "Fahrenheit", "NumPyBackedExtensionArrayMixin"]
 
 
 class NumPyBackedExtensionArrayMixin(ExtensionArray):
@@ -168,7 +169,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 		return self._itemsize * len(self)
 
 	def _formatting_values(self):
-		return np.array(self._format_values(), dtype='object')
+		return np.array(self._format_values(), dtype="object")
 
 	def copy(self, deep: bool = False) -> ABCExtensionArray:
 		"""
@@ -198,7 +199,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 	def argsort(
 			self,
 			ascending: bool = True,
-			kind: Union[Literal['quicksort'], Literal['mergesort'], Literal['heapsort']] = "quicksort",
+			kind: Union[Literal["quicksort"], Literal["mergesort"], Literal["heapsort"]] = "quicksort",
 			*args,
 			**kwargs,
 			) -> np.ndarray:
@@ -238,7 +239,7 @@ class Celsius(float):
 
 	def __init__(self, value):
 		if isinstance(value, str):
-			value = re.split("[\u205F\u2103\u00B0C]", value)[0]
+			value = re.split("[ ℃°C]", value)[0]
 
 		float.__init__(value)
 
