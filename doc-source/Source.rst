@@ -3,7 +3,7 @@ Downloading source code
 =========================
 
 The ``si_unit_pandas`` source code is available on GitHub,
-and can be accessed from the following URL: https://github.com/domdfcoding/si_unit_pandas"
+and can be accessed from the following URL: https://github.com/domdfcoding/si_unit_pandas
 
 If you have ``git`` installed, you can clone the repository with the following command:
 
