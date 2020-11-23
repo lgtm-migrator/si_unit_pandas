@@ -36,7 +36,7 @@ si_unit_pandas
 	:alt: Docs Check Status
 
 .. |travis| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Linux%20Tests/badge.svg
-	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%Linux+Tests%22
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Linux+Tests%22
 	:alt: Linux Test Status
 
 .. |actions_windows| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Windows%20Tests/badge.svg
