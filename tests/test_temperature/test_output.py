@@ -1,5 +1,6 @@
 # 3rd party
 import pandas  # type: ignore
+from domdf_python_tools.testing import check_file_regression
 from pandas._testing import assert_frame_equal  # type: ignore
 from pytest_regressions.file_regression import FileRegressionFixture
 
@@ -13,4 +14,4 @@ def test_output(file_regression: FileRegressionFixture):
 	expected = pandas.DataFrame({0: s})
 	assert_frame_equal(result, expected)
 
-	file_regression.check(str(expected))
+	check_file_regression(str(expected), file_regression)
