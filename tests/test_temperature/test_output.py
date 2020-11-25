@@ -1,6 +1,6 @@
 # 3rd party
-import pandas
-from pandas._testing import assert_frame_equal
+import pandas  # type: ignore
+from pandas._testing import assert_frame_equal  # type: ignore
 from pytest_regressions.file_regression import FileRegressionFixture
 
 # this package
