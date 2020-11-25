@@ -2,6 +2,7 @@
 import numpy  # type: ignore
 import pandas  # type: ignore
 import pandas.testing as tm  # type: ignore
+from domdf_python_tools.testing import not_windows
 from hypothesis import given
 from hypothesis.strategies import integers, lists
 from pandas._testing import assert_numpy_array_equal  # type: ignore
@@ -100,6 +101,7 @@ def test_argsort(ints):
 # ---------
 
 
+@not_windows("Numpy int size differs on Windows.")
 def test_factorize():
 	arr = si_unit_pandas.TemperatureArray([1, 1, 10, 10])
 	labels, uniques = pandas.factorize(arr)
