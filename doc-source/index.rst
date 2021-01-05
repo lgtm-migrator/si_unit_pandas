@@ -20,10 +20,8 @@ si_unit_pandas
 	  - |docs| |docs_check|
 	* - Tests
 	  - |actions_linux| |actions_windows| |actions_macos| |coveralls|
-	* - PyPI
-	  - |pypi-version| |supported-versions| |supported-implementations| |wheel|
 	* - Activity
-	  - |commits-latest| |commits-since| |maintained| |pypi-downloads|
+	  - |commits-latest| |commits-since| |maintained|
 	* - QA
 	  - |codefactor| |actions_flake8| |actions_mypy| |pre_commit_ci|
 	* - Other
@@ -66,26 +64,6 @@ si_unit_pandas
 .. |codefactor| codefactor-shield::
 	:alt: CodeFactor Grade
 
-.. |pypi-version| pypi-shield::
-	:project: si_unit_pandas
-	:version:
-	:alt: PyPI - Package Version
-
-.. |supported-versions| pypi-shield::
-	:project: si_unit_pandas
-	:py-versions:
-	:alt: PyPI - Supported Python Versions
-
-.. |supported-implementations| pypi-shield::
-	:project: si_unit_pandas
-	:implementations:
-	:alt: PyPI - Supported Implementations
-
-.. |wheel| pypi-shield::
-	:project: si_unit_pandas
-	:wheel:
-	:alt: PyPI - Wheel
-
 .. |license| github-shield::
 	:license:
 	:alt: License
@@ -105,11 +83,6 @@ si_unit_pandas
 .. |maintained| maintained-shield:: 2021
 	:alt: Maintenance
 
-.. |pypi-downloads| pypi-shield::
-	:project: si_unit_pandas
-	:downloads: month
-	:alt: PyPI - Downloads
-
 .. |pre_commit_ci| pre-commit-ci-shield::
 	:alt: pre-commit.ci status
 
@@ -119,7 +92,6 @@ si_unit_pandas
 .. start installation
 
 .. installation:: si_unit_pandas
-	:pypi:
 	:github:
 
 .. end installation

@@ -8,6 +8,7 @@ license: 'BSD-3-Clause'
 short_desc: 'Custom Pandas dtypes for values with SI units.'
 
 enable_conda: False
+on_pypi: False
 
 python_deploy_version: 3.6
 
