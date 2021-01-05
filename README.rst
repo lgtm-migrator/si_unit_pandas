@@ -19,33 +19,43 @@ si_unit_pandas
 	* - Docs
 	  - |docs| |docs_check|
 	* - Tests
-	  - |travis| |actions_windows| |actions_macos| |coveralls| |codefactor| |pre_commit_ci|
+	  - |actions_linux| |actions_windows| |actions_macos| |coveralls|
 	* - PyPI
 	  - |pypi-version| |supported-versions| |supported-implementations| |wheel|
 	* - Activity
-	  - |commits-latest| |commits-since| |maintained|
+	  - |commits-latest| |commits-since| |maintained| |pypi-downloads|
+	* - QA
+	  - |codefactor| |actions_flake8| |actions_mypy| |pre_commit_ci|
 	* - Other
-	  - |license| |language| |requires| |pre_commit|
+	  - |license| |language| |requires|
 
 .. |docs| image:: https://img.shields.io/readthedocs/si_unit_pandas/latest?logo=read-the-docs
-	:target: https://si_unit_pandas.readthedocs.io/en/latest/?badge=latest
+	:target: https://si_unit_pandas.readthedocs.io/en/latest
 	:alt: Documentation Build Status
 
 .. |docs_check| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Docs%20Check/badge.svg
 	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Docs+Check%22
 	:alt: Docs Check Status
 
-.. |travis| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Linux%20Tests/badge.svg
-	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Linux+Tests%22
+.. |actions_linux| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Linux/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Linux%22
 	:alt: Linux Test Status
 
-.. |actions_windows| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Windows%20Tests/badge.svg
-	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Windows+Tests%22
+.. |actions_windows| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Windows/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Windows%22
 	:alt: Windows Test Status
 
-.. |actions_macos| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/macOS%20Tests/badge.svg
-	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22macOS+Tests%22
+.. |actions_macos| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/macOS/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22macOS%22
 	:alt: macOS Test Status
+
+.. |actions_flake8| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/Flake8/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22Flake8%22
+	:alt: Flake8 Status
+
+.. |actions_mypy| image:: https://github.com/domdfcoding/si_unit_pandas/workflows/mypy/badge.svg
+	:target: https://github.com/domdfcoding/si_unit_pandas/actions?query=workflow%3A%22mypy%22
+	:alt: mypy status
 
 .. |requires| image:: https://requires.io/github/domdfcoding/si_unit_pandas/requirements.svg?branch=master
 	:target: https://requires.io/github/domdfcoding/si_unit_pandas/requirements/?branch=master
@@ -90,12 +100,12 @@ si_unit_pandas
 	:target: https://github.com/domdfcoding/si_unit_pandas/commit/master
 	:alt: GitHub last commit
 
-.. |maintained| image:: https://img.shields.io/maintenance/yes/2020
+.. |maintained| image:: https://img.shields.io/maintenance/yes/2021
 	:alt: Maintenance
 
-.. |pre_commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
-	:target: https://github.com/pre-commit/pre-commit
-	:alt: pre-commit
+.. |pypi-downloads| image:: https://img.shields.io/pypi/dm/si_unit_pandas
+	:target: https://pypi.org/project/si_unit_pandas/
+	:alt: PyPI - Downloads
 
 .. |pre_commit_ci| image:: https://results.pre-commit.ci/badge/github/domdfcoding/si_unit_pandas/master.svg
 	:target: https://results.pre-commit.ci/latest/github/domdfcoding/si_unit_pandas/master
