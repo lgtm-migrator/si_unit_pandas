@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 #
 #  base.py
+"""
+Base functionality.
+"""
 #
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
@@ -42,7 +45,7 @@
 # stdlib
 from abc import abstractmethod
 from numbers import Real
-from typing import Dict, Iterable, Optional, Sequence, SupportsFloat, Tuple, Type, TypeVar, Union, overload
+from typing import Dict, Iterable, List, Optional, Sequence, SupportsFloat, Tuple, Type, TypeVar, Union, overload
 
 # 3rd party
 import numpy  # type: ignore
@@ -65,7 +68,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 	@property
 	def dtype(self):
 		"""
-		The dtype for this extension array, CelsiusType
+		The dtype for this extension array, :class:`~.CelsiusType`.
 		"""
 
 		return self._dtype
@@ -110,7 +113,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 
 	def __len__(self) -> int:
 		"""
-		Length of this array
+		Returns the length of this array.
 		"""
 
 		return len(self.data)
@@ -159,7 +162,11 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 
 		return cls(numpy.concatenate([array.data for array in to_concat]))
 
-	def tolist(self):
+	def tolist(self) -> List:
+		"""
+		Convert the array to a Python list.
+		"""
+
 		return self.data.tolist()
 
 	def argsort(
@@ -189,7 +196,7 @@ class NumPyBackedExtensionArrayMixin(ExtensionArray):
 
 		return self.data.argsort()
 
-	def unique(self) -> ExtensionArray:
+	def unique(self) -> ExtensionArray:  # noqa: D102
 		# https://github.com/pandas-dev/pandas/pull/19869
 		_, indices = numpy.unique(self.data, return_index=True)
 		data = self.data.take(numpy.sort(indices))
@@ -225,7 +232,7 @@ class BaseArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtensionArra
 	@property
 	def na_value(self):
 		"""
-		The missing value
+		The missing value.
 
 		**Example:**
 
@@ -298,8 +305,10 @@ class BaseArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtensionArra
 			raise TypeError("column selection must be str, not bytes, in Python 3")
 		elif isinstance(where, tuple):
 			return False
-		elif isinstance(where, (numpy.ndarray,
-								self.__class__)) and issubclass(where.dtype.type, (numpy.str, numpy.str_)):
+		elif (
+				isinstance(where, (numpy.ndarray, self.__class__))
+				and issubclass(where.dtype.type, (numpy.str, numpy.str_))
+				):
 			return True
 		elif isinstance(where, (numpy.ndarray, self.__class__)) and issubclass(
 				where.dtype.type, (numpy.object, numpy.object_)
@@ -308,7 +317,8 @@ class BaseArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtensionArra
 		elif isinstance(where, (numpy.ndarray, self.__class__)):
 			return False
 		try:
-			assert len(where) > 0 and all(isinstance(x, str) for x in where)
+			assert len(where) > 0
+			assert all(isinstance(x, str) for x in where)
 		except (TypeError, AssertionError):
 			return False
 		else:
@@ -368,7 +378,7 @@ class UserFloat(Real):
 	def as_integer_ratio(self) -> Tuple[int, int]:
 		return float(self).as_integer_ratio()
 
-	def hex(self) -> str:
+	def hex(self) -> str:  # noqa: A003  # pylint: disable=redefined-builtin
 		return float(self).hex()
 
 	def is_integer(self) -> bool:

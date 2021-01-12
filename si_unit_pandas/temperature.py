@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 #
 #  temperature.py
+"""
+Temperature-specific functionality.
+"""
 #
 #  Copyright (c) 2020 Dominic Davis-Foster <dominic@davis-foster.co.uk>
 #
@@ -127,20 +130,30 @@ TemperatureBase.register(Fahrenheit)
 
 @pandas.api.extensions.register_extension_dtype
 class CelsiusType(ExtensionDtype):
+	"""
+	Numpy dtype representing a temperature in degrees Celsius.
+	"""
+
 	name: str = "celsius"
-	type: Type = TemperatureBase
+	type: Type = TemperatureBase  # noqa: A003  # pylint: disable=redefined-builtin
 	kind: str = 'O'
 	_record_type: Type = numpy.float
 
 	@classmethod
 	def construct_from_string(cls, string):
+		"""
+		Construct a :class:`~.CelsiusType` from a string.
+
+		:param string:
+		"""
+
 		if string == cls.name:
 			return cls()
 		else:
 			raise TypeError(f"Cannot construct a '{cls.__name__}' from '{string}'")
 
 	@classmethod
-	def construct_array_type(cls) -> Type["TemperatureArray"]:
+	def construct_array_type(cls) -> Type["TemperatureArray"]:  # noqa: D102
 		return TemperatureArray
 
 	@property
@@ -258,6 +271,13 @@ class TemperatureArray(BaseArray):
 		super().append(value)
 
 	def astype(self, dtype, copy=True):
+		"""
+		Returns the array with its values as the given dtype.
+
+		:param dtype:
+		:param copy: If :py:obj:`True`, returns a copy of the array.
+		"""
+
 		if isinstance(dtype, CelsiusType):
 			if copy:
 				self = self.copy()
@@ -297,7 +317,13 @@ class TemperatureArray(BaseArray):
 		return mask
 
 
-def is_temperature_type(obj):
+def is_temperature_type(obj) -> bool:
+	"""
+	Returns whether ``obj`` is a temperature type.
+
+	:param obj:
+	"""
+
 	t = getattr(obj, "dtype", obj)
 
 	try:
@@ -308,9 +334,9 @@ def is_temperature_type(obj):
 
 def to_temperature(values: _to_temp_types) -> TemperatureArray:
 	"""
-	Convert values to a TemperatureArray
+	Convert values to a :class:`~.TemperatureArray`.
 
-	:param values: int, float, str, Celsius or Fahrenheit, or sequence of those
+	:param values:
 	"""
 
 	if is_list_like(values):
@@ -323,6 +349,7 @@ def _to_temperature_array(
 		values: Union[TemperatureArray, numpy.ndarray, Sequence[Union[str, float]]]
 		) -> numpy.ndarray:  # : Union[TemperatureArray, np.ndarray]
 	"""
+	Convert the values to a temperature array.
 
 	:param values:
 	"""
@@ -341,12 +368,6 @@ def _to_temperature_array(
 
 
 def _to_int_pairs(values: _to_temp_types):
-	"""
-
-	:param values:
-
-	:return:
-	"""
 
 	if isinstance(values, (str, int, float, Celsius)):
 		if isinstance(values, Fahrenheit):
@@ -367,4 +388,5 @@ def _to_int_pairs(values: _to_temp_types):
 				new_values.append(float(v))
 
 		values = [float(v) for v in new_values]
+
 	return values

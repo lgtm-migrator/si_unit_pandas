@@ -11,12 +11,12 @@ import pytest
 import si_unit_pandas
 
 
-@pytest.fixture
+@pytest.fixture()
 def series():
 	return pandas.Series(si_unit_pandas.TemperatureArray([0, 1, 2]))
 
 
-@pytest.fixture
+@pytest.fixture()
 def frame():
 	return pandas.DataFrame({
 			'A': si_unit_pandas.TemperatureArray([0, 1, 2]),
