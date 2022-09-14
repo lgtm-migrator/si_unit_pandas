@@ -109,7 +109,10 @@ Example
 
 .. code-block:: python
 
-	from si_unit_pandas import TemperatureArray
+	# 3rd party
 	import pandas as pd
+
+	# this package
+	from si_unit_pandas import TemperatureArray
 
 	TemperatureArray([10, 20, 30, 40, 50])

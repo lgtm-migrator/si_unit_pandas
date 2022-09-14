@@ -355,8 +355,7 @@ class BaseArray(numpy.lib.mixins.NDArrayOperatorsMixin, NumPyBackedExtensionArra
 
 class _SupportsIndex(Protocol):
 
-	def __index__(self) -> int:
-		...
+	def __index__(self) -> int: ...
 
 
 _F = TypeVar("_F", bound="UserFloat")
@@ -443,12 +442,10 @@ class UserFloat(Real):
 		return float(self).__trunc__()
 
 	@overload
-	def __round__(self, ndigits: int) -> float:
-		...
+	def __round__(self, ndigits: int) -> float: ...
 
 	@overload
-	def __round__(self, ndigits: None = ...) -> int:
-		...
+	def __round__(self, ndigits: None = ...) -> int: ...
 
 	def __round__(self, ndigits: Optional[int] = None) -> Union[int, float]:
 		return float(self).__round__(ndigits)

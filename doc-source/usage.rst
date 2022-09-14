@@ -8,7 +8,10 @@ We'll assume that the following imports have been performed.
 
 .. code-block:: python
 
+   # 3rd party
    import pandas as pd
+
+   # this package
    from si_unit_pandas import TemperatureArray, to_temperature
 
 Parsing
@@ -26,7 +29,7 @@ From Strings
 
 .. code-block:: python
 
-   to_temperature(['10', '20', '30', '40', '50'])
+   to_temperature(["10", "20", "30", "40", "50"])
 
 From Numbers
 """""""""""""
